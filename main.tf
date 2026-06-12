@@ -64,3 +64,20 @@ resource "libvirt_volume" "base" {
     }
   }
 }
+
+resource "libvirt_volume" "root_disk" {
+  name     = "${var.vm.hostname}-root.qcow2"
+  pool     = "default"
+  capacity = 21474836480 # 20 GB in bytes
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
+  backing_store = {
+    path = libvirt_volume.base.path
+    format = {
+      type = "qcow2"
+    }
+  }
+}
