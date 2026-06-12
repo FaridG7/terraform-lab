@@ -46,3 +46,21 @@ resource "libvirt_volume" "cloudinit" {
     }
   }
 }
+
+resource "libvirt_volume" "base" {
+  name = "ubuntu-24.04.qcow2"
+  pool = "default"
+
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
+
+  create = {
+    content = {
+      # url = "https://cloud-images.ubuntu.com/noble/20260518/noble-server-cloudimg-amd64.img"
+      url = "./iso/noble-server-cloudimg-amd64.img"
+    }
+  }
+}
