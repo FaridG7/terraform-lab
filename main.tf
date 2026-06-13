@@ -81,3 +81,64 @@ resource "libvirt_volume" "root_disk" {
     }
   }
 }
+# Basic VM configuration
+resource "libvirt_domain" "terraform-lab" {
+  name        = "terraform-lab"
+  memory      = 4096
+  memory_unit = "MiB"
+  vcpu        = 4
+  type        = "kvm"
+  running     = true
+
+  os = {
+    type = "hvm"
+  }
+
+  devices = {
+    disks = [
+      {
+        source = {
+          volume = {
+            pool   = libvirt_volume.root_disk.pool
+            volume = libvirt_volume.root_disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+      },
+      {
+        device = "cdrom"
+        target = { dev = "sda", bus = "sata" }
+        source = {
+          volume = {
+            pool   = libvirt_volume.cloudinit.pool
+            volume = libvirt_volume.cloudinit.name
+          }
+        }
+      }
+    ]
+    interfaces = [
+      {
+        model = {
+          type = "virtio"
+        }
+        source = {
+          network = {
+            network = "default"
+          }
+        }
+      }
+    ]
+    consoles = [
+      {
+        type = "pty"
+        target = {
+          type = "serial"
+          port = 0
+        }
+      }
+    ]
+  }
+}
