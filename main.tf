@@ -97,6 +97,10 @@ resource "libvirt_domain" "terraform-lab" {
   devices = {
     disks = [
       {
+        driver = {
+          name = "qemu"
+          type = "qcow2"
+        }
         source = {
           volume = {
             pool   = libvirt_volume.root_disk.pool
@@ -110,6 +114,10 @@ resource "libvirt_domain" "terraform-lab" {
       },
       {
         device = "cdrom"
+        driver = {
+          name = "qemu"
+          type = "raw"
+        }
         target = { dev = "sda", bus = "sata" }
         source = {
           volume = {
@@ -141,4 +149,9 @@ resource "libvirt_domain" "terraform-lab" {
       }
     ]
   }
+}
+
+output "vm_ip" {
+  description = "IP address assigned to the VM"
+  value       = libvirt_domain.terraform-lab.devices.interfaces[0].ip
 }
